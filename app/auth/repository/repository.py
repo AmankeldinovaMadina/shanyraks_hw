@@ -35,3 +35,79 @@ class AuthRepository:
             }
         )
         return user
+
+    def update_user(self, user_id: str, data: dict):
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "phone": data["phone"],
+                    "name": data["name"],
+                    "city": data["city"],
+                }
+            },
+        )
+
+    def save_avatar(self, user_id: str, url: str):
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "avatar_url": 1,
+                }
+            },
+        )
+
+    def delete_avatar(self, user_id: str):
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$unset": {
+                    "avatar_url": "",
+                }
+            },
+        )
+
+    def like_shanyrak(self, user_id: str, shanyrak_id: str):
+        likes = self.find_likes(user_id)
+        if shanyrak_id not in likes:
+            likes.append(shanyrak_id)
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "likes": likes,
+                }
+            },
+        )
+
+    def get_shanyraks(self, shanyrak_ids: list):
+        ids = [ObjectId(id) for id in shanyrak_ids]
+        shanyraks = self.database["shanyraks"].find({"_id": {"$in": ids}}, {"_id": 1, "address": 1})
+        return [shanyrak for shanyrak in shanyraks]
+
+    def get_all_likes(self, user_id: str):
+        likes = self.find_likes(user_id)
+        return self.get_shanyraks(likes)
+
+    def delete_liked_shanyrak(self, user_id: str, shanyrak_id: str):
+        likes = self.find_likes(user_id)
+        if shanyrak_id in likes:
+            likes.remove(shanyrak_id)
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "likes": likes,
+                }
+            },
+        )
+
+    def find_likes(self, user_id: str) -> list:
+        user = self.database["users"].find_one(
+            {
+                "_id": ObjectId(user_id),
+            }
+        )
+        print(user)
+        return user["likes"] if "likes" in user else []

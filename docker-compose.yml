@@ -4,9 +4,11 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./deploy/dockerfiles/Dockerfile
+      dockerfile: ./Dockerfile
     environment:
-     - MONGOHOST=mongodb
+      - MONGOHOST=mongodb
+    env_file:
+      - .env
     volumes:
       - ./:/code
     ports:
