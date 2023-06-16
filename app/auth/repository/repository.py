@@ -11,6 +11,52 @@ class AuthRepository:
     def __init__(self, database: Database):
         self.database = database
 
+    def delete_user_like(self, user_id: str, shanyrak_id: str):
+        likes = self.get_user_likes(user_id)
+        print(likes)
+        if shanyrak_id in likes:
+            likes.remove(shanyrak_id)
+
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "likes": likes,
+                }
+            },
+        )
+
+    def set_user_like(self, user_id: str, shanyrak_id: str):
+        likes = self.get_user_likes(user_id)
+        print(likes)
+        if shanyrak_id not in likes:
+            likes.append(shanyrak_id)
+
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$set": {
+                    "likes": likes,
+                }
+            },
+        )
+
+    def get_user_likes(self, user_id: str) -> list:
+        user = self.database["users"].find_one(
+            {
+                "_id": ObjectId(user_id),
+            }
+        )
+        return user["likes"] if "likes" in user else []
+
+    def get_shanyraks_by_id(self, user_id) -> list:
+        shanyrak_ids = self.get_user_likes(user_id)
+        obj_shanyrak_ids = [ObjectId(shanyrak_id) for shanyrak_id in shanyrak_ids]
+        print("ids", obj_shanyrak_ids)
+        shanyraks = self.database["shanyraks"].find({"_id": {"$in": obj_shanyrak_ids}})
+
+        return list(shanyraks)
+
     def create_user(self, user: dict):
         payload = {
             "email": user["email"],

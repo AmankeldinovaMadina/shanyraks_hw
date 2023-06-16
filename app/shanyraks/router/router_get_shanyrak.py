@@ -11,11 +11,6 @@ from ..service import Service, get_service
 from . import router
 
 
-class Location(AppModel):
-    Latitude: float
-    Longitude: float
-
-
 class GetShanyrakResponse(AppModel):
     id: Any = Field(alias="_id")
     type: str

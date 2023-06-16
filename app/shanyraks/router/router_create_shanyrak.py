@@ -36,5 +36,8 @@ def create_shanyrak(
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
     user_id = jwt_data.user_id
+    print(input.dict())
+    save_data = input.dict() | svc.here_service.get_coordinates(input.address)
+    print(save_data)
     inserted_id = svc.repository.create_shanyrak(user_id=user_id, payload=save_data)
     return CreateShanyrakResponse(id=inserted_id)

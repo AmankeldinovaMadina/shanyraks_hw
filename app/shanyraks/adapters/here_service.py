@@ -13,7 +13,7 @@ class HereService:
 
         return {
             "location": {
-                "latitude": json["items"][0]["position"]["lat"],
-                "longitude": json["items"][0]["position"]["lng"],
+                "latitude": json["items"][0]["position"]["lat"] if len(json["items"]) != 0 else 0.0,
+                "longitude": json["items"][0]["position"]["lng"] if len(json["items"]) != 0 else 0.0,
             }
         }
