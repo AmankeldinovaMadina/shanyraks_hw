@@ -4,9 +4,11 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./deploy/dockerfiles/Dockerfile
+      dockerfile: ./Dockerfile
     environment:
-     - MONGOHOST=mongodb
+      - MONGOHOST=mongodb
+    env_file:
+      - .env
     volumes:
       - ./:/code
     ports:
@@ -21,7 +23,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGOPASSWORD:-password}
     ports:
       - "27017:27017"
-    volumes:
+    volumes:  
       - mongodb_data_container:/data/db
 
   mongo-express:
