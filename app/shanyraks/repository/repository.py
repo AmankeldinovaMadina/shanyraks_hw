@@ -32,7 +32,21 @@ class ShanyrakRepository:
             },
         )
 
-    def delete_shanyrak_by_id(self, shanyrak_id: str, user_id: str) -> DeleteResult:
+    def delete_shanyrak_by_id(self, shanyrak_id: str, user_id: str, ) -> DeleteResult:
         return self.database["shanyraks"].delete_one(
             {"_id": ObjectId(shanyrak_id), "user_id": ObjectId(user_id)}
         )
+    
+    def get_filtered_info(self, limit: int, offset: int) -> List[dict]:
+      collection = self.database["shanyraks"]
+
+      total_count = collection.count_documents({})
+      print(total_count, flush=True)
+
+      cursor = collection.find({}).limit(limit).skip(offset)
+
+      result = []
+      for item in cursor:
+        result.append(item)
+
+      return result
